@@ -1,0 +1,32 @@
+created:
+    - database/factories/UserFactory.php
+    - database/factories/UnitFactory.php
+    - database/factories/ItemFactory.php
+    - database/factories/StockFactory.php
+    - database/factories/StockOpnameFactory.php
+    - database/factories/StockDifferenceFactory.php
+    - database/migrations/2024_11_20_135912_create_users_table.php
+    - database/migrations/2024_11_20_135913_create_units_table.php
+    - database/migrations/2024_11_20_135914_create_items_table.php
+    - database/migrations/2024_11_20_135915_create_stocks_table.php
+    - database/migrations/2024_11_20_135916_create_stock_opnames_table.php
+    - database/migrations/2024_11_20_135917_create_stock_differences_table.php
+    - app/Models/User.php
+    - app/Models/Unit.php
+    - app/Models/Item.php
+    - app/Models/Stock.php
+    - app/Models/StockOpname.php
+    - app/Models/StockDifference.php
+    - database/seeders/UserSeeder.php
+    - database/seeders/UnitSeeder.php
+    - database/seeders/ItemSeeder.php
+    - database/seeders/StockSeeder.php
+    - database/seeders/StockOpnameSeeder.php
+    - database/seeders/StockDifferenceSeeder.php
+models:
+    User: { name: string, email: 'string unique', password: string, role: 'enum:superadmin,manajemen_keuangan,manajemen_gudang', timestamps: timestamps }
+    Unit: { name: 'string unique', timestamps: timestamps }
+    Item: { sku_code: 'string unique', name: string, unit_id: 'foreign:units.id', timestamps: timestamps }
+    Stock: { item_id: 'foreign:items.id', qty: 'integer default:0', timestamps: timestamps }
+    StockOpname: { item_id: 'foreign:items.id', year: year, qty: integer, timestamps: timestamps }
+    StockDifference: { item_id: 'foreign:items.id', year: year, saldo_akhir_qty: integer, opname_qty: integer, difference_qty: integer, timestamps: timestamps }

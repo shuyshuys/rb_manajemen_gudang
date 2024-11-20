@@ -1,0 +1,38 @@
+models:
+  User:
+    name: string
+    email: string unique
+    password: string
+    role: enum:superadmin,manajemen_keuangan,manajemen_gudang
+    timestamps: true
+
+  Unit:
+    name: string unique
+    timestamps: true
+
+  Item:
+    sku_code: string unique
+    name: string
+    unit_id: foreign:units.id
+    timestamps: true
+
+  Stock:
+    item_id: foreign:items.id
+    qty: integer default:0
+    timestamps: true
+
+  StockOpname:
+    item_id: foreign:items.id
+    year: year
+    qty: integer
+    timestamps: true
+
+  StockDifference:
+    item_id: foreign:items.id
+    year: year
+    saldo_akhir_qty: integer
+    opname_qty: integer
+    difference_qty: integer
+    timestamps: true
+
+seeders: User, Unit, Item, Stock, StockOpname, StockDifference
