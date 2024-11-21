@@ -16,8 +16,14 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class LocationResource extends Resource
 {
     protected static ?string $model = Location::class;
+    
+    protected static ?string $navigationLabel = 'Tempat Penyimpanan';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $pluralLabel = 'Tempat Penyimpanan';
+
+    protected static ?string $navigationIcon = 'heroicon-o-map-pin';
+
+    protected static ?string $navigationGroup = 'Data Master';
 
     public static function form(Form $form): Form
     {
@@ -35,15 +41,7 @@ class LocationResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                ])
             ->filters([
                 //
             ])
