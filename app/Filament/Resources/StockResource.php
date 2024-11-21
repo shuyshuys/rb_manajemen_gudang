@@ -21,7 +21,13 @@ class StockResource extends Resource
 {
     protected static ?string $model = Stock::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Qty Stok';
+
+    protected static ?string $pluralLabel = 'Qty Stok';
+
+    protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
+
+    protected static ?string $navigationGroup = 'Manajemen Inventaris';
 
     public static function form(Form $form): Form
     {
@@ -37,11 +43,11 @@ class StockResource extends Resource
                         ->numeric()
                         ->required(),
                     TextInput::make('qty_opname')
-                        ->label('Stock Opname 2024')
+                        ->label('Stok Opname 2024')
                         ->numeric()
                         ->required(),
                     TextInput::make('qty_difference')
-                        ->label('Saldo Akhir VS Stock Opname')
+                        ->label('Saldo Akhir VS Stok Opname')
                         ->numeric(),
                     Select::make('location_id')
                         ->label('Lokasi')
@@ -67,9 +73,46 @@ class StockResource extends Resource
                     ->label('Item')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('qty_balance')->label('Saldo Akhir'),
-                TextColumn::make('qty_opname')->label('Stock Opname'),
-                TextColumn::make('qty_difference')->label('Selisih'),
+                TextColumn::make('qty_balance')
+                    ->label('Saldo Akhir')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('qty_opname')
+                    ->label('Stok Opname')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('qty_difference')
+                    ->label('Selisih')
+                    ->sortable()
+                    ->searchable()
+                    ->badge()
+                    ->colors([
+                        'danger' => fn($state) => $state < 0,
+                        'gray' => fn($state) => $state == 0,
+                        'success' => fn($state) => $state > 0,
+                    ]),
+                TextColumn::make('month')
+                    ->label('Bulan')
+                    ->sortable()
+                    ->searchable()
+                    ->formatStateUsing(function ($state) {
+                        $months = [
+                            '01' => 'Januari',
+                            '02' => 'Februari',
+                            '03' => 'Maret',
+                            '04' => 'April',
+                            '05' => 'Mei',
+                            '06' => 'Juni',
+                            '07' => 'Juli',
+                            '08' => 'Agustus',
+                            '09' => 'September',
+                            '10' => 'Oktober',
+                            '11' => 'November',
+                            '12' => 'Desember',
+                        ];
+
+                        return $months[$state] ?? $state;
+                    }),
                 TextColumn::make('location.name')
                     ->label('Lokasi')
                     ->sortable()
@@ -77,19 +120,22 @@ class StockResource extends Resource
                 TextColumn::make('creator.name')
                     ->label('Dibuat Oleh')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->colors([
+                        'success' => fn($record) => $record->creator->role == 'manajemen_keuangan',
+                        'info' => fn($record) => $record->creator->role == 'maanajemen_gudang',
+                        'danger' => fn($record) => $record->creator->role == 'superadmin',
+                    ]),
                 TextColumn::make('updater.name')
                     ->label('Diperbarui Oleh')
                     ->sortable()
-                    ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable()
+                    ->badge()
+                    ->colors([
+                        'success' => fn($record) => $record->creator->role == 'manajemen_keuangan',
+                        'info' => fn($record) => $record->creator->role == 'maanajemen_gudang',
+                        'danger' => fn($record) => $record->creator->role == 'superadmin',
+                    ]),
             ])
             ->filters([
                 //
@@ -111,12 +157,20 @@ class StockResource extends Resource
         ];
     }
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListStocks::route('/'),
-            'create' => Pages\CreateStock::route('/create'),
-            'edit' => Pages\EditStock::route('/{record}/edit'),
         ];
     }
 }
