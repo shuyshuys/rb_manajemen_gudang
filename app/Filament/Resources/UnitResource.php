@@ -17,7 +17,13 @@ class UnitResource extends Resource
 {
     protected static ?string $model = Unit::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Satuan';
+
+    protected static ?string $pluralLabel = 'Satuan';
+
+    protected static ?string $navigationIcon = 'heroicon-o-adjustments-horizontal';
+
+    protected static ?string $navigationGroup = 'Data Master';
 
     public static function form(Form $form): Form
     {
@@ -35,15 +41,7 @@ class UnitResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                ])
             ->filters([
                 //
             ])
