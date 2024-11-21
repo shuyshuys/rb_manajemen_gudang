@@ -21,13 +21,15 @@ class StockResource extends Resource
 {
     protected static ?string $model = Stock::class;
 
-    protected static ?string $navigationLabel = 'Qty Stok';
+    protected static ?string $navigationLabel = 'List Qty Stok';
 
     protected static ?string $pluralLabel = 'Qty Stok';
 
     protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
 
-    protected static ?string $navigationGroup = 'Manajemen Inventaris';
+    protected static ?string $navigationGroup = 'List';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
