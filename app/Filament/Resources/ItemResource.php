@@ -6,12 +6,17 @@ use App\Filament\Resources\ItemResource\Pages;
 use App\Filament\Resources\ItemResource\RelationManagers;
 use App\Models\Item;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class ItemResource extends Resource
 {
@@ -23,17 +28,19 @@ class ItemResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('sku_code')
+                TextInput::make('code')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('unit_id')
+                Select::make('unit_id')
                     ->relationship('unit', 'name')
                     ->required(),
-                Forms\Components\Select::make('stock_differences')
-                    ->relationship('unit', 'name'),
+                // Hidden::make('created_by')
+                //     ->default(Auth::user()->id),
+                // Hidden::make('updated_by')
+                //     ->default(Auth::user()->id),
             ]);
     }
 
@@ -41,21 +48,25 @@ class ItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('sku_code')
+                TextColumn::make('code')->label('Kode'),
+                TextColumn::make('name')->label('Nama'),
+                TextColumn::make('unit.name')->label('Satuan'),
+                TextColumn::make('creator.name')
+                    ->label('Dibuat Oleh')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('updater.name')
+                    ->label('Diperbarui Oleh')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('unit.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

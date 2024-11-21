@@ -15,9 +15,11 @@ return new class extends Migration
 
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->string('sku_code')->unique();
-            $table->string('name');
-            $table->foreignId('unit_id')->constrained();
+            $table->string('code', 20)->unique(); // Kode barang
+            $table->string('name', 255); // Nama barang
+            $table->foreignId('unit_id')->constrained('units')->onDelete('cascade'); // Relasi ke satuan
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
 

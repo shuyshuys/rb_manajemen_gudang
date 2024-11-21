@@ -6,9 +6,13 @@ use App\Filament\Resources\StockResource\Pages;
 use App\Filament\Resources\StockResource\RelationManagers;
 use App\Models\Stock;
 use Filament\Forms;
+use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -23,13 +27,35 @@ class StockResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('item_id')
-                    ->relationship('item', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('qty')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                Card::make([
+                    Select::make('item_id')
+                        ->label('Item')
+                        ->relationship('item', 'name')
+                        ->required(),
+                    TextInput::make('qty_balance')
+                        ->label('Saldo Akhir')
+                        ->numeric()
+                        ->required(),
+                    TextInput::make('qty_opname')
+                        ->label('Stock Opname 2024')
+                        ->numeric()
+                        ->required(),
+                    TextInput::make('qty_difference')
+                        ->label('Saldo Akhir VS Stock Opname')
+                        ->numeric(),
+                    Select::make('location_id')
+                        ->label('Lokasi')
+                        ->relationship('location', 'name')
+                        ->required(),
+                    TextInput::make('month')
+                        ->label('Bulan')
+                        ->numeric()
+                        ->required(),
+                    TextInput::make('year')
+                        ->label('Tahun')
+                        ->numeric()
+                        ->required(),
+                ]),
             ]);
     }
 
@@ -37,17 +63,30 @@ class StockResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('item.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('qty')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('item.name')
+                    ->label('Item')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('qty_balance')->label('Saldo Akhir'),
+                TextColumn::make('qty_opname')->label('Stock Opname'),
+                TextColumn::make('qty_difference')->label('Selisih'),
+                TextColumn::make('location.name')
+                    ->label('Lokasi')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('creator.name')
+                    ->label('Dibuat Oleh')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('updater.name')
+                    ->label('Diperbarui Oleh')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

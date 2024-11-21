@@ -26,4 +26,9 @@ class Unit extends Model
     protected $casts = [
         'id' => 'integer',
     ];
+
+    public function items()
+    {
+        return $this->hasMany(Item::class);
+    }
 }
