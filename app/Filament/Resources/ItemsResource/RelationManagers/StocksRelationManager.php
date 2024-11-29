@@ -69,9 +69,34 @@ class StocksRelationManager extends RelationManager
             ->recordTitleAttribute('qty_balance]]]]]]]]==')
             ->columns([
                 TextColumn::make('item.name')
-                    ->label('Item')
+                    ->label('Barang')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('year')
+                    ->label('Tahun')
+                    ->sortable(),
+                TextColumn::make('month')
+                    ->label('Bulan')
+                    ->sortable()
+                    ->formatStateUsing(function ($state) {
+                        $months = [
+                            '1' => 'Januari',
+                            '2' => 'Februari',
+                            '3' => 'Maret',
+                            '4' => 'April',
+                            '5' => 'Mei',
+                            '6' => 'Juni',
+                            '7' => 'Juli',
+                            '8' => 'Agustus',
+                            '9' => 'September',
+                            '10' => 'Oktober',
+                            '11' => 'November',
+                            '12' => 'Desember',
+                        ];
+
+                        return $months[$state] ?? $state;
+                    }),
                 TextColumn::make('qty_balance')
                     ->label('Saldo Akhir')
                     ->sortable()
@@ -93,28 +118,6 @@ class StocksRelationManager extends RelationManager
                         'success' => fn($state) => $state > 0,
                         'danger' => fn($state) => $state < 0,
                     ]),
-                TextColumn::make('month')
-                    ->label('Bulan')
-                    ->sortable()
-                    ->searchable()
-                    ->formatStateUsing(function ($state) {
-                        $months = [
-                            '1' => 'Januari',
-                            '2' => 'Februari',
-                            '3' => 'Maret',
-                            '4' => 'April',
-                            '5' => 'Mei',
-                            '6' => 'Juni',
-                            '7' => 'Juli',
-                            '8' => 'Agustus',
-                            '9' => 'September',
-                            '10' => 'Oktober',
-                            '11' => 'November',
-                            '12' => 'Desember',
-                        ];
-
-                        return $months[$state] ?? $state;
-                    }),
                 TextColumn::make('location.name')
                     ->label('Lokasi')
                     ->sortable()
@@ -128,7 +131,8 @@ class StocksRelationManager extends RelationManager
                         'success' => fn($record) => $record->creator->role == 'manajemen_keuangan',
                         'primary' => fn($record) => $record->creator->role == 'manajemen_gudang',
                         'danger' => fn($record) => $record->creator->role == 'superadmin',
-                    ]),
+                    ])
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updater.name')
                     ->label('Diperbarui Oleh')
                     ->sortable()
@@ -140,6 +144,7 @@ class StocksRelationManager extends RelationManager
                         'danger' => fn($record) => $record->creator->role == 'superadmin',
                     ]),
             ])
+            ->defaultSort(fn($query)=> $query->orderBy('year','desc')->orderBy('month','desc'))
             ->filters([
                 //
             ])
