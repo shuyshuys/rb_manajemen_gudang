@@ -2,17 +2,20 @@
 
 namespace App\Filament\Resources\ItemsResource\RelationManagers;
 
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class StocksRelationManager extends RelationManager
 {
@@ -141,10 +144,24 @@ class StocksRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->successNotification(function ($record) {
+                        $this->sendStockMismatchNotification($record);
+
+                        return Notification::make()
+                            ->title('Berhasil menyimpan')
+                            ->body('Stok barang telah berhasil dibuat');
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->successNotification(function ($record) {
+                        $this->sendStockMismatchNotification($record);
+
+                        return Notification::make()
+                            ->title('Berhasil mengedit')
+                            ->body('Stok barang telah berhasil diedit');
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -152,5 +169,19 @@ class StocksRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected function sendStockMismatchNotification($record)
+    {
+        if ($record->qty_difference != 0) {
+            $users = User::where('role', 'manajemen_gudang')->get();
+
+            foreach ($users as $user) {
+                Notification::make()
+                    ->title('Ketidaksesuaian Stok')
+                    ->body("Terjadi Selisih dalam jumlah stok:<br> Barang: {$record->item->name} <br>Selisih: {$record->qty_difference} <br>bulan {$record->month} tahun {$record->year}")
+                    ->sendToDatabase($user);
+            }
+        }
     }
 }
