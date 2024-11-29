@@ -75,7 +75,7 @@ class ItemResource extends Resource
                     ->badge()
                     ->colors([
                         'success' => fn($record) => $record->creator->role == 'manajemen_keuangan',
-                        'info' => fn($record) => $record->creator->role == 'maanajemen_gudang',
+                        'info' => fn($record) => $record->creator->role == 'manajemen_gudang',
                         'danger' => fn($record) => $record->creator->role == 'superadmin',
                     ]),
                 TextColumn::make('updater.name')
@@ -85,7 +85,7 @@ class ItemResource extends Resource
                     ->badge()
                     ->colors([
                         'success' => fn($record) => $record->creator->role == 'manajemen_keuangan',
-                        'info' => fn($record) => $record->creator->role == 'maanajemen_gudang',
+                        'info' => fn($record) => $record->creator->role == 'manajemen_gudang',
                         'danger' => fn($record) => $record->creator->role == 'superadmin',
                     ]),
             ])
