@@ -18,10 +18,10 @@ class ItemsLocationChart extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Barang per Lokasi',
-                    'data' => $dataBarangLokasi['qty'],
+                    'data' => $dataBarangLokasi['qty'] ?? '',
                 ],
             ],
-            'labels' => $dataBarangLokasi['location_name'],
+            'labels' => $dataBarangLokasi['location_name'] ?? '',
 
         ];
     }
