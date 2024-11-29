@@ -58,19 +58,24 @@ class StocksRelationManager extends RelationManager
                         ->label('Stock Opname 2024')
                         ->numeric()
                         ->required()
-                        // ->afterStateUpdated(function ($state, callable $set, Get $get) {
-                        //     $set('qty_difference', $get('qty_opname') - $get('qty_balance'));
-                        // })
                         ->afterStateUpdated(function ($state, callable $set, Get $get) {
-                            $set('qty_difference', $get('qty_opname') - $get('qty_balance'));
+                            $qty_opname = (int) $get('qty_opname');
+                            $qty_balance = (int) $get('qty_balance');
+                            $set('qty_difference', $qty_opname - $qty_balance);
                         }),
+                    //     ->afterStateUpdated(function ($state, callable $set, Get $get) {
+                    //         $qty_opname = (int) $get('qty_opname');
+                    //         $qty_balance = (int) $get('qty_balance');
+                    //         $set('qty_difference', $qty_opname - $qty_balance);
+                    //     }),
                     TextInput::make('qty_difference')
                         ->label('Saldo Akhir VS Stock Opname')
                         ->numeric()
                         ->required()
                         ->placeholder('Mohon tunggu saat sistem menghitung selisih')
-                        ->disabled()
-                        ->dehydrated(false),
+                        ->readOnly()
+                        // ->disabled()
+                        // ->dehydrated(false),
                 ]),
             ])->live();
     }
