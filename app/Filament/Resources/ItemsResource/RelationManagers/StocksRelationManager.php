@@ -4,6 +4,8 @@ namespace App\Filament\Resources\ItemsResource\RelationManagers;
 
 use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -55,18 +57,28 @@ class StocksRelationManager extends RelationManager
                     TextInput::make('qty_opname')
                         ->label('Stock Opname 2024')
                         ->numeric()
-                        ->required(),
+                        ->required()
+                        // ->afterStateUpdated(function ($state, callable $set, Get $get) {
+                        //     $set('qty_difference', $get('qty_opname') - $get('qty_balance'));
+                        // })
+                        ->afterStateUpdated(function ($state, callable $set, Get $get) {
+                            $set('qty_difference', $get('qty_opname') - $get('qty_balance'));
+                        }),
                     TextInput::make('qty_difference')
                         ->label('Saldo Akhir VS Stock Opname')
-                        ->numeric(),
+                        ->numeric()
+                        ->required()
+                        ->placeholder('Mohon tunggu saat sistem menghitung selisih')
+                        ->disabled()
+                        ->dehydrated(false),
                 ]),
-            ]);
+            ])->live();
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('qty_balance]]]]]]]]==')
+            // ->recordTitleAttribute('qty_balance')
             ->columns([
                 TextColumn::make('item.name')
                     ->label('Barang')
