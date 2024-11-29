@@ -72,9 +72,4 @@ class Stock extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
-
-    public function getQtyDifferenceAttribute()
-    {
-    return $this->qty_balance - $this->qty_opname;
-    }
 }
