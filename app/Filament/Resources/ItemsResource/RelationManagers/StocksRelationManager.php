@@ -82,9 +82,13 @@ class StocksRelationManager extends RelationManager
                     ->sortable()
                     ->searchable()
                     ->badge()
+                    ->formatStateUsing(function (string $state) {
+                        return $state > 0 ? $state : "{$state}";
+                    })
                     ->colors([
-                        'success' => fn($state) => $state == 0,
-                        'danger' => fn($state) => $state != 0,
+                        'secondary' => fn($state) => $state == 0,
+                        'success' => fn($state) => $state > 0,
+                        'danger' => fn($state) => $state < 0,
                     ]),
                 TextColumn::make('month')
                     ->label('Bulan')
@@ -119,7 +123,7 @@ class StocksRelationManager extends RelationManager
                     ->badge()
                     ->colors([
                         'success' => fn($record) => $record->creator->role == 'manajemen_keuangan',
-                        'primary' => fn($record) => $record->creator->role == 'maanajemen_gudang',
+                        'primary' => fn($record) => $record->creator->role == 'manajemen_gudang',
                         'danger' => fn($record) => $record->creator->role == 'superadmin',
                     ]),
                 TextColumn::make('updater.name')
@@ -129,7 +133,7 @@ class StocksRelationManager extends RelationManager
                     ->badge()
                     ->colors([
                         'success' => fn($record) => $record->creator->role == 'manajemen_keuangan',
-                        'primary' => fn($record) => $record->creator->role == 'maanajemen_gudang',
+                        'primary' => fn($record) => $record->creator->role == 'manajemen_gudang',
                         'danger' => fn($record) => $record->creator->role == 'superadmin',
                     ]),
             ])
