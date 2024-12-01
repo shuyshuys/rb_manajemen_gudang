@@ -53,9 +53,10 @@ class ItemResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->sortable()
-                    ->searchable(),
+                TextColumn::make('row_number')
+                    ->label('No.')
+                    ->rowIndex()
+                    ->sortable(),
                 TextColumn::make('code')
                     ->label('Kode')
                     ->sortable()
@@ -94,6 +95,7 @@ class ItemResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
