@@ -2,19 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\StockResource\Pages;
-use App\Filament\Resources\StockResource\RelationManagers;
-use App\Models\Stock;
+use Carbon\Carbon;
 use Filament\Forms;
-use Filament\Forms\Components\Card;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
+use App\Models\Stock;
+use App\Models\Location;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\DB;
+use Filament\Forms\Components\Card;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\StockResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StockResource extends Resource
@@ -99,15 +103,15 @@ class StockResource extends Resource
                     ->searchable()
                     ->formatStateUsing(function ($state) {
                         $months = [
-                            '01' => 'Januari',
-                            '02' => 'Februari',
-                            '03' => 'Maret',
-                            '04' => 'April',
-                            '05' => 'Mei',
-                            '06' => 'Juni',
-                            '07' => 'Juli',
-                            '08' => 'Agustus',
-                            '09' => 'September',
+                            '1' => 'Januari',
+                            '2' => 'Februari',
+                            '3' => 'Maret',
+                            '4' => 'April',
+                            '5' => 'Mei',
+                            '6' => 'Juni',
+                            '7' => 'Juli',
+                            '8' => 'Agustus',
+                            '9' => 'September',
                             '10' => 'Oktober',
                             '11' => 'November',
                             '12' => 'Desember',
@@ -115,19 +119,13 @@ class StockResource extends Resource
 
                         return $months[$state] ?? $state;
                     }),
+                TextColumn::make('year')
+                    ->label('Tahun')
+                    ->sortable(),
                 TextColumn::make('location.name')
                     ->label('Lokasi')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('creator.name')
-                    ->label('Dibuat Oleh')
-                    ->sortable()
-                    ->searchable()
-                    ->colors([
-                        'success' => fn($record) => $record->creator->role == 'manajemen_keuangan',
-                        'info' => fn($record) => $record->creator->role == 'manajemen_gudang',
-                        'danger' => fn($record) => $record->creator->role == 'superadmin',
-                    ]),
                 TextColumn::make('updater.name')
                     ->label('Diperbarui Oleh')
                     ->sortable()
@@ -139,16 +137,57 @@ class StockResource extends Resource
                         'danger' => fn($record) => $record->creator->role == 'superadmin',
                     ]),
             ])
+            ->defaultSort(fn($query) => $query->orderBy('year', 'desc')->orderBy('month', 'desc'))
             ->filters([
-                //
+                // Filter::make('this_month')
+                //     ->query(
+                //         fn(Builder $query): Builder =>
+                //         $query->whereMonth('created_at', Carbon::now()->month)
+                //             ->whereYear('created_at', Carbon::now()->year)
+                //     )
+                //     ->label('Bulan Ini'),
+                Filter::make('selisih_not_zero')
+                    ->query(
+                        fn(Builder $query): Builder =>
+                        $query->where('qty_difference', '!=', 0)
+                    )
+                    ->label('Selisih Tidak Nol'),
+                SelectFilter::make('location_id')
+                    ->label('Lokasi')
+                    ->options(
+                        Location::all()->pluck('name', 'id')->toArray()
+                    )
+                    ->attribute('location_id'),
+                SelectFilter::make('bulan')
+                    ->options(
+                        [
+                            '1' => 'Januari',
+                            '2' => 'Februari',
+                            '3' => 'Maret',
+                            '4' => 'April',
+                            '5' => 'Mei',
+                            '6' => 'Juni',
+                            '7' => 'Juli',
+                            '8' => 'Agustus',
+                            '9' => 'September',
+                            '10' => 'Oktober',
+                            '11' => 'November',
+                            '12' => 'Desember',
+                        ]
+                    )
+                    ->attribute('month'),
+                SelectFilter::make('year')
+                    ->label('Tahun')
+                    ->options(
+                        Stock::select('year')->distinct()->orderBy('year', 'desc')->pluck('year', 'year')->toArray()
+                    )
+                    ->attribute('year')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+
             ]);
     }
 
