@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Models\Item;
 use Filament\Tables;
+use App\Models\Stock;
+use App\Models\Location;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -12,10 +14,12 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ItemResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ItemsResource\RelationManagers\StocksRelationManager;
+use App\Models\Unit;
 
 class ItemResource extends Resource
 {
@@ -92,7 +96,12 @@ class ItemResource extends Resource
                     ]),
             ])
             ->filters([
-                //
+                SelectFilter::make('unit')
+                    ->label('Satuan')
+                    ->options(
+                        Unit::all()->pluck('name', 'id')->toArray()
+                    )
+                    ->attribute('unit_id'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
